@@ -3,24 +3,26 @@ import configparser
 import os
 import time
 import unittest
+import pytest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
-
+# print(os.environ['HOME'])
 @allure.feature('Test Baidu WebUI')
-class ISelenium(unittest.TestCase):
+class Test_ISelenium():
     # 读入配置文件
     def get_config(self):
         config = configparser.ConfigParser()
-        config.read('C:\\Users\\aiiage\\iselenium.ini')
+        config.read(os.path.join(os.environ['HOME'],'iselenium.ini'))
+        print(config)
         return config
 
     def tearDown(self):
         self.driver.quit()
 
-    def setUp(self):
+    def setup(self):
         config = self.get_config()
 
         # 控制是否采用无界面形式运行自动化测试
@@ -37,6 +39,7 @@ class ISelenium(unittest.TestCase):
 
         self.driver = webdriver.Chrome(executable_path=config.get('driver', 'chrome_driver'),
                                        options=chrome_options)
+
 
     @allure.story('Test key word 今日头条')
     def test_webui_1(self):
@@ -68,4 +71,4 @@ class ISelenium(unittest.TestCase):
         elem.send_keys(f'{search_keyword}{Keys.RETURN}')
         print(f'搜索关键词~{search_keyword}')
         time.sleep(5)
-        self.assertTrue(f'{search_keyword}' in self.driver.title, msg=f'{testcase_name}校验点 pass')
+        assert f'{search_keyword}' in self.driver.title
